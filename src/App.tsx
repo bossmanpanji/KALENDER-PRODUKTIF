@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
-import { Calendar, ListTodo, LogOut } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { AuthGate } from './components/AuthGate';
 import { DailyAgenda } from './components/DailyAgenda';
 import { MonthCalendar } from './components/MonthCalendar';
@@ -12,7 +12,7 @@ import {
   updateTask,
 } from './services/tasksService';
 import { supabase } from './supabaseClient';
-import { MobileTab, Task, TaskFormValues } from './types/task';
+import { Task, TaskFormValues } from './types/task';
 import { formatHeaderToday, getTodayKey, parseDateKey } from './utils/date';
 
 export default function App() {
@@ -29,7 +29,6 @@ export default function App() {
   const [selectedDateKey, setSelectedDateKey] = useState<string>(() => getTodayKey());
   const [viewYear, setViewYear] = useState<number>(() => new Date().getFullYear());
   const [viewMonth, setViewMonth] = useState<number>(() => new Date().getMonth());
-  const [mobileTab, setMobileTab] = useState<MobileTab>('calendar');
 
   // Perbarui jam lokal tiap 30 detik agar status tenggat tetap akurat
   useEffect(() => {
@@ -245,8 +244,8 @@ export default function App() {
         </div>
       </header>
 
-      {/* Konten Utama */}
-      <main className="mx-auto max-w-[1280px] px-4 pt-5 pb-24 sm:px-6 sm:pt-7 lg:px-10 lg:pt-10 lg:pb-12">
+      {/* Konten Utama: Satu halaman vertikal di mobile, berdampingan di desktop */}
+      <main className="mx-auto max-w-[1280px] px-4 pt-5 pb-12 sm:px-6 sm:pt-7 lg:px-10 lg:pt-10">
         {authLoading ? (
           <div className="py-12 text-center text-[var(--text-meta)] text-[var(--color-ink-muted)]">
             Memeriksa sesi akun...
@@ -278,13 +277,9 @@ export default function App() {
                 Memuat daftar tugas...
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-start lg:gap-12">
-                {/* Kolom Kiri: Tampilan Bulan */}
-                <div
-                  className={`${
-                    mobileTab === 'calendar' ? 'block' : 'hidden'
-                  } lg:col-span-7 lg:block`}
-                >
+              <div className="grid grid-cols-1 gap-7 lg:grid-cols-12 lg:items-start lg:gap-12">
+                {/* Kalender Bulanan (Atas di mobile, Kiri di desktop) */}
+                <div className="lg:col-span-7">
                   <MonthCalendar
                     viewYear={viewYear}
                     viewMonth={viewMonth}
@@ -295,16 +290,11 @@ export default function App() {
                     onPrevMonth={handlePrevMonth}
                     onNextMonth={handleNextMonth}
                     onSelectDate={handleSelectDate}
-                    onOpenMobileAgenda={() => setMobileTab('agenda')}
                   />
                 </div>
 
-                {/* Kolom Kanan: Agenda Harian */}
-                <div
-                  className={`${
-                    mobileTab === 'agenda' ? 'block' : 'hidden'
-                  } lg:col-span-5 lg:block lg:border-l lg:border-[var(--color-rule)] lg:pl-10`}
-                >
+                {/* Daftar Agenda Harian (Bawah kalender di mobile, Kanan di desktop) */}
+                <div className="border-t border-[var(--color-rule)] pt-7 lg:col-span-5 lg:border-t-0 lg:border-l lg:border-[var(--color-rule)] lg:pt-0 lg:pl-10">
                   <DailyAgenda
                     selectedDateKey={selectedDateKey}
                     tasks={selectedDayTasks}
@@ -321,56 +311,6 @@ export default function App() {
           </>
         )}
       </main>
-
-      {/* Navigasi Bawah Khusus Mobile */}
-      {session && (
-        <nav
-          aria-label="Navigasi tampilan utama"
-          className="fixed right-0 bottom-0 left-0 z-30 border-t border-[var(--color-rule)] bg-[var(--color-paper)] lg:hidden"
-        >
-          <div className="grid grid-cols-2">
-            <button
-              type="button"
-              onClick={() => setMobileTab('calendar')}
-              aria-current={mobileTab === 'calendar' ? 'page' : undefined}
-              className={`agenda-transition relative flex min-h-[56px] flex-col items-center justify-center gap-1 py-2 text-[var(--text-micro)] whitespace-nowrap ${
-                mobileTab === 'calendar'
-                  ? 'font-semibold text-[var(--color-accent)]'
-                  : 'font-medium text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]'
-              }`}
-            >
-              {mobileTab === 'calendar' && (
-                <span
-                  aria-hidden="true"
-                  className="absolute top-0 right-6 left-6 h-[2px] bg-[var(--color-accent)]"
-                />
-              )}
-              <Calendar className="h-[18px] w-[18px]" strokeWidth={1.75} aria-hidden="true" />
-              <span>Kalender</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setMobileTab('agenda')}
-              aria-current={mobileTab === 'agenda' ? 'page' : undefined}
-              className={`agenda-transition relative flex min-h-[56px] flex-col items-center justify-center gap-1 py-2 text-[var(--text-micro)] whitespace-nowrap ${
-                mobileTab === 'agenda'
-                  ? 'font-semibold text-[var(--color-accent)]'
-                  : 'font-medium text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]'
-              }`}
-            >
-              {mobileTab === 'agenda' && (
-                <span
-                  aria-hidden="true"
-                  className="absolute top-0 right-6 left-6 h-[2px] bg-[var(--color-accent)]"
-                />
-              )}
-              <ListTodo className="h-[18px] w-[18px]" strokeWidth={1.75} aria-hidden="true" />
-              <span>Agenda</span>
-            </button>
-          </div>
-        </nav>
-      )}
     </div>
   );
 }

@@ -1,11 +1,9 @@
-import { AlertCircle, ArrowRight, Check, ChevronLeft, ChevronRight } from 'lucide-react';
+import { AlertCircle, Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Task } from '../types/task';
 import {
   BULAN_LENGKAP,
-  BULAN_SINGKAT,
   getMonthGridDays,
   isTaskOverdue,
-  parseDateKey,
   toDateKey,
 } from '../utils/date';
 import { HARI_SINGKAT } from '../utils/date';
@@ -21,7 +19,6 @@ interface MonthCalendarProps {
   onPrevMonth: () => void;
   onNextMonth: () => void;
   onSelectDate: (dateKey: string) => void;
-  onOpenMobileAgenda: () => void;
 }
 
 export function MonthCalendar({
@@ -34,13 +31,8 @@ export function MonthCalendar({
   onPrevMonth,
   onNextMonth,
   onSelectDate,
-  onOpenMobileAgenda,
 }: MonthCalendarProps) {
   const gridDays = getMonthGridDays(viewYear, viewMonth);
-  const selectedTasks = tasksByDate[selectedDateKey] ?? [];
-  const selectedOverdueCount = selectedTasks.filter((t) => isTaskOverdue(t, now)).length;
-  const selectedPendingCount = selectedTasks.filter((t) => !t.completed).length;
-  const selectedParsed = parseDateKey(selectedDateKey);
 
   const monthPrefix = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-`;
   let monthTotalTasks = 0;
@@ -141,7 +133,7 @@ export function MonthCalendar({
                 totalCount > 0 ? `, ${totalCount} tugas` : ''
               }${overdueCount > 0 ? `, ${overdueCount} terlewat` : ''}`}
               aria-pressed={isSelected}
-              className={`agenda-transition relative flex min-h-[58px] flex-col justify-between border-r border-b border-[var(--color-rule)] p-1.5 text-left sm:min-h-[80px] sm:p-2 lg:min-h-[92px] lg:p-2.5 ${
+              className={`agenda-transition relative flex min-h-[50px] flex-col justify-between border-r border-b border-[var(--color-rule)] p-1.5 text-left sm:min-h-[80px] sm:p-2 lg:min-h-[92px] lg:p-2.5 ${
                 isSelected
                   ? 'bg-[var(--color-paper-alt)] ring-1 ring-inset ring-[var(--color-ink)]'
                   : 'bg-[var(--color-paper)] hover:bg-[var(--color-paper-alt)]/60'
@@ -240,31 +232,6 @@ export function MonthCalendar({
             </button>
           );
         })}
-      </div>
-
-      {/* Ringkasan Tanggal Terpilih untuk Mobile (Akses Cepat ke Agenda) */}
-      <div className="mt-4 flex items-center justify-between gap-3 rounded-[var(--radius-base)] border border-[var(--color-rule)] bg-[var(--color-paper-alt)] px-4 py-3 lg:hidden">
-        <div className="min-w-0">
-          <p className="text-[var(--text-meta)] font-semibold text-[var(--color-ink)] truncate">
-            {selectedParsed.getDate()} {BULAN_SINGKAT[selectedParsed.getMonth()]} {selectedParsed.getFullYear()}
-          </p>
-          <p className="text-[var(--text-micro)] text-[var(--color-ink-muted)] tabular-nums">
-            {selectedTasks.length === 0
-              ? 'Belum ada tugas tercatat'
-              : selectedOverdueCount > 0
-                ? `${selectedTasks.length} tugas · ${selectedOverdueCount} terlewat`
-                : `${selectedTasks.length} tugas · ${selectedPendingCount} tersisa`}
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={onOpenMobileAgenda}
-          className="agenda-transition flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-[var(--radius-base)] bg-[var(--color-ink)] px-3.5 py-2 text-[var(--text-meta)] font-medium text-[var(--color-paper)] hover:opacity-90 whitespace-nowrap"
-        >
-          <span>Buka agenda</span>
-          <ArrowRight className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
-        </button>
       </div>
     </section>
   );

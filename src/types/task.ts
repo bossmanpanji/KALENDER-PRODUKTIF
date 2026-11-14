@@ -14,5 +14,3 @@ export interface TaskFormValues {
   time: string;
   notes: string;
 }
-
-export type MobileTab = 'calendar' | 'agenda';
