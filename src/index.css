@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   DESIGN TOKENS — KALENDER DISIPLIN
+   Palet: 5 netral hangat (kertas & tinta) + 1 warna aksen (merah karmin tinta)
+   Radius tunggal: 4px
+   Grid spasi: 4px / 8px
+   ========================================================================== */
+:root {
+  /* Warna Netral Hangat */
+  --color-paper: #F7F4EC;
+  --color-paper-alt: #EDE8DC;
+  --color-rule: #D5CEC0;
+  --color-ink-muted: #635D55;
+  --color-ink: #1B1917;
+
+  /* 1 Warna Aksen */
+  --color-accent: #9B2226;
+  --color-accent-contrast: #F7F4EC;
+
+  /* Radius Tunggal */
+  --radius-base: 4px;
+
+  /* Tipografi */
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Skala Ukuran Teks */
+  --text-display: clamp(2.5rem, 4vw, 3.5rem);
+  --text-heading: 1.5rem;
+  --text-subheading: 1.125rem;
+  --text-body: 0.9375rem;
+  --text-meta: 0.8125rem;
+  --text-micro: 0.75rem;
+
+  /* Spasi (4/8px grid) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+
+  /* Durasi Gerak Fungsional */
+  --motion-fast: 150ms;
+  --motion-base: 180ms;
+  --ease-settle: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  html,
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font-family: inherit;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-body {
+  font-family: var(--font-sans);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Transisi Fungsional (150–180ms) */
+.agenda-transition {
+  transition-property: color, background-color, border-color, opacity, transform;
+  transition-duration: var(--motion-fast);
+  transition-timing-function: var(--ease-settle);
+}
+
+@keyframes panel-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-panel-reveal {
+  animation: panel-reveal var(--motion-base) var(--ease-settle) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .agenda-transition,
+  .animate-panel-reveal,
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
